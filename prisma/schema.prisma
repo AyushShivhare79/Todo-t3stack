@@ -29,7 +29,7 @@ datasource db {
 model Todo {
     id         Int     @id @default(autoincrement())
     task       String
-    isComplete Boolean
+    isComplete Boolean @default(false)
     user       User    @relation(fields: [todoId], references: [id])
     todoId     String
 }

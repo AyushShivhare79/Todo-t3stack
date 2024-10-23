@@ -1,4 +1,3 @@
-import { title } from "process";
 import { z } from "zod";
 
 import {
@@ -8,38 +7,25 @@ import {
 } from "~/server/api/trpc";
 
 export const createTodo = createTRPCRouter({
-  createTodo: publicProcedure
+  createTodo: protectedProcedure
     .input(z.object({ task: z.string(), description: z.string() }))
-    .mutation(({ctx, input}) => {
-        ctx.db.todo.create({
-            data: {
-                task: input.task,
-                
-            }
-        })
-    }),
-
-  create: protectedProcedure
-    .input(z.object({ name: z.string().min(1) }))
-    .mutation(async ({ ctx, input }) => {
-      return ctx.db.post.create({
+    .mutation(({ ctx, input }) => {
+      ctx.db.todo.create({
         data: {
-          name: input.name,
-          createdBy: { connect: { id: ctx.session.user.id } },
+          todoId: ctx.session.user.id,
+          task: input.task,
         },
       });
     }),
 
-  getLatest: protectedProcedure.query(async ({ ctx }) => {
-    const post = await ctx.db.post.findFirst({
-      orderBy: { createdAt: "desc" },
-      where: { createdBy: { id: ctx.session.user.id } },
+  getTodo: protectedProcedure.query(({ ctx }) => {
+    ctx.db.user.findFirst({
+      where: {
+        id: ctx.session.user.id,
+      },
+      include: {
+        todo: true,
+      },
     });
-
-    return post ?? null;
-  }),
-
-  getSecretMessage: protectedProcedure.query(() => {
-    return "you can now see this secret message!";
   }),
 });
