@@ -14,16 +14,24 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-model Post {
-    id        Int      @id @default(autoincrement())
-    name      String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+// model Post {
+//     id        Int      @id @default(autoincrement())
+//     name      String
+//     createdAt DateTime @default(now())
+//     updatedAt DateTime @updatedAt
 
-    createdBy   User   @relation(fields: [createdById], references: [id])
-    createdById String
+//     createdBy   User   @relation(fields: [createdById], references: [id])
+//     createdById String
 
-    @@index([name])
+//     @@index([name])
+// }
+
+model Todo {
+    id         Int     @id @default(autoincrement())
+    task       String
+    isComplete Boolean
+    user       User    @relation(fields: [todoId], references: [id])
+    todoId     String
 }
 
 // Necessary for Next auth
@@ -62,7 +70,8 @@ model User {
     image         String?
     accounts      Account[]
     sessions      Session[]
-    posts         Post[]
+    // posts         Post[]
+    todo          Todo[]
 }
 
 model VerificationToken {
